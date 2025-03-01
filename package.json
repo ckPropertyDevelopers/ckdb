@@ -7,7 +7,7 @@
     "build": "strapi build",
     "deploy": "strapi deploy",
     "develop": "strapi develop",
-    "start": "NODE_ENV=production npm install --omit=dev && strapi start",
+    "start": "strapi start",
     "strapi": "strapi",
     "healthcheck": "node scripts/healthcheck.js"
   },
