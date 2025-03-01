@@ -1,22 +1,23 @@
 FROM node:18-alpine AS builder
 
-# Install build dependencies
-RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev
+# Install build dependencies including python3 for node-gyp
+RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev python3 make g++
 
 WORKDIR /opt/app
 COPY package*.json ./
 
-# Install dependencies with minimal memory usage
+# Install dependencies with platform-specific bindings
 ENV NODE_ENV=production
-RUN npm ci --only=production --no-audit --no-optional
+RUN npm ci --only=production --no-audit --no-optional --platform=linuxmusl
 
 # Copy source files
 COPY . .
 
-# Build with absolute minimum memory
+# Build with platform specification
 ENV NODE_OPTIONS="--max-old-space-size=256"
 ENV STRAPI_TELEMETRY_DISABLED=true
-RUN NODE_ENV=production npm run build
+RUN npm rebuild @swc/core --platform=linuxmusl && \
+    NODE_ENV=production npm run build
 
 # Second stage - minimal runtime
 FROM node:18-alpine AS runner
