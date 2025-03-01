@@ -1,5 +1,7 @@
-.cache
 .git
+.gitignore
+.env
+.cache
 .tmp
 build
 node_modules

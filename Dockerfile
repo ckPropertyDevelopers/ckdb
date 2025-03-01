@@ -1,28 +1,33 @@
-FROM node:18-alpine
+# Use multi-stage build to reduce final image size
+FROM node:18-alpine as builder
 
-# Installing libvips-dev for sharp Compatibility
-RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev > /dev/null 2>&1 && \
-    rm -rf /var/cache/apk/*
-
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
+# First stage: Install build dependencies
+RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev
 
 WORKDIR /opt/
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
-# Optimize npm install and build process for memory
-RUN npm install --production --no-audit --no-optional && \
-    npm cache clean --force
+# Install dependencies with specific memory limits
+ENV NODE_OPTIONS="--max-old-space-size=384"
+RUN npm ci --only=production --no-audit
 
-ENV PATH /opt/node_modules/.bin:$PATH
+# Second stage: Copy only necessary files
+FROM node:18-alpine
+
+# Install only runtime dependencies
+RUN apk add --no-cache vips-dev
 
 WORKDIR /opt/app
+COPY --from=builder /opt/node_modules ./node_modules
 COPY . .
 
-# Build with memory limit for node
+# Build with memory constraints
 ENV NODE_OPTIONS="--max-old-space-size=384"
 RUN npm run build
 
-# Expose port and start command
+# Configure runtime
+ENV PORT=1337
+ENV HOST=0.0.0.0
 EXPOSE 1337
+
 CMD ["npm", "run", "start"]
