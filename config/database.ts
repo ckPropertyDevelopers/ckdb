@@ -1,15 +1,25 @@
-const config = {
+export default ({ env }) => ({
   connection: {
     client: 'postgres',
     connection: {
-      host: process.env.DATABASE_HOST || '127.0.0.1',
-      port: Number(process.env.DATABASE_PORT) || 5432,
-      database: process.env.DATABASE_NAME || 'darwinStrapi',
-      user: process.env.DATABASE_USERNAME || 'admin',
-      password: process.env.DATABASE_PASSWORD || 'Password123',
-      ssl: false,
+      host: 'aws-0-ap-southeast-1.pooler.supabase.com',
+      port: 6543,
+      database: 'postgres',
+      user: 'postgres.awblduzgygxcktsohjbk',
+      password: 'DuwVQwZrQGK8xTga',
+      ssl: {
+        rejectUnauthorized: false,
+      },
+      pool: {
+        min: 0,
+        max: 1,
+      },
     },
+    settings: {
+      client_encoding: 'utf8',
+      searchPath: ['public'],
+    },
+    acquireConnectionTimeout: 60000,
+    debug: true,
   },
-}
-
-export default ({ env }) => config
+})
