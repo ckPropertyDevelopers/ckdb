@@ -1,26 +1,42 @@
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
-# Install dependencies
+# Install build dependencies
 RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev
 
 WORKDIR /opt/app
 COPY package*.json ./
 
-# Install with production only
+# Install dependencies with minimal memory usage
 ENV NODE_ENV=production
-RUN npm ci --only=production --no-audit
+RUN npm ci --only=production --no-audit --no-optional
 
-# Copy app files
+# Copy source files
 COPY . .
 
-# Build with memory limit
-ENV NODE_OPTIONS="--max-old-space-size=512"
+# Build with absolute minimum memory
+ENV NODE_OPTIONS="--max-old-space-size=256"
 ENV STRAPI_TELEMETRY_DISABLED=true
-RUN npm run build
+RUN NODE_ENV=production npm run build
 
-# Runtime configuration
+# Second stage - minimal runtime
+FROM node:18-alpine AS runner
+
+# Install only runtime dependencies
+RUN apk add --no-cache vips-dev
+
+WORKDIR /opt/app
+
+# Copy only what's needed to run
+COPY --from=builder /opt/app/package*.json ./
+COPY --from=builder /opt/app/build ./build
+COPY --from=builder /opt/app/config ./config
+COPY --from=builder /opt/app/src ./src
+COPY --from=builder /opt/app/public ./public
+COPY --from=builder /opt/app/node_modules ./node_modules
+
+ENV NODE_ENV=production
 ENV PORT=1337
 ENV HOST=0.0.0.0
-EXPOSE 1337
 
+EXPOSE 1337
 CMD ["npm", "run", "start"]
