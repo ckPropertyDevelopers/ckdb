@@ -22,3 +22,9 @@ services:
         value: 0.0.0.0
       - key: PORT
         value: 1337
+      - key: CLOUDINARY_NAME
+        value: dupulgojk
+      - key: CLOUDINARY_KEY
+        value: 457939227246957
+      - key: CLOUDINARY_SECRET
+        value: SFH8K8GgTti8nfGH8KfP0-rfdM
