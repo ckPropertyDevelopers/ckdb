@@ -425,7 +425,6 @@ export interface ApiHomeHome extends Struct.SingleTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::home.home'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    secondaryContent: Schema.Attribute.Text;
     secondaryTitle: Schema.Attribute.String;
     seo: Schema.Attribute.Component<'shared.seo', true>;
     title: Schema.Attribute.String;

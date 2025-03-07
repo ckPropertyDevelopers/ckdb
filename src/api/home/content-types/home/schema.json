@@ -26,9 +26,6 @@
         "audios"
       ]
     },
-    "secondaryContent": {
-      "type": "text"
-    },
     "content": {
       "type": "text"
     },

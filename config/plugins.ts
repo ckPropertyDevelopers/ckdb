@@ -11,6 +11,9 @@ module.exports = ({ env }) => ({
       actionOptions: {
         upload: {
           folder: 'ck-property',
+          use_filename: true,
+          unique_filename: true,
+          overwrite: false,
           resource_type: 'auto',
           transformation: {
             quality: 'auto:best',
