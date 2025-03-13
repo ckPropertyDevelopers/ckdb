@@ -428,6 +428,7 @@ export interface ApiHomeHome extends Struct.SingleTypeSchema {
     secondaryTitle: Schema.Attribute.String;
     seo: Schema.Attribute.Component<'shared.seo', true>;
     title: Schema.Attribute.String;
+    titleImage: Schema.Attribute.Media<'images' | 'files'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
